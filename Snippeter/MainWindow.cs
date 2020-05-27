@@ -89,27 +89,32 @@ namespace Snippeter
             if (node == null)
                 return;
 
-            SnippetTreeEntry entry = node.Tag as SnippetTreeEntry;
+            if (e.KeyCode == Keys.Delete)
+            {
+                SnippetTreeEntry entry = node.Tag as SnippetTreeEntry;
+                DeleteSnippet(entry);
+            }
+        }
 
+        private void DeleteSnippet(SnippetTreeEntry entry)
+        {
             if (entry.IsCategory)
             {
-                MessageBox.Show("Categories are automatically deleted when it contains no snippets", 
+                MessageBox.Show("Categories are automatically deleted when it contains no snippets",
                     "Can't delete category", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
                 return;
             }
+            
+            DialogResult result = MessageBox.Show("Delete the snippet " + entry.InternalName,
+                "Confirm", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
-            if (e.KeyCode == Keys.Delete)
+            if (result == DialogResult.OK)
             {
-                DialogResult result = MessageBox.Show("Delete the snippet " + entry.InternalName, 
-                    "Confirm", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-
-                if (result == DialogResult.OK)
-                {
-                    File.Delete(entry.Path);
-                    TreeLoader.Load();
-                }
+                File.Delete(entry.Path);
+                TreeLoader.Load();
             }
+            
         }
 
         private void SnippetTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
